@@ -55,7 +55,7 @@ var paxWidget = function(rmstring,defaultString,summaryTemplate,editTemplate,add
 
 			tmpObj.childTag = "Child"
 
-			if(tmpObj.children === "1"){
+			if(tmpObj.children === "0"){
 
 				tmpObj['age1'] = '';
 				tmpObj['age2'] = '';
@@ -82,8 +82,46 @@ var paxWidget = function(rmstring,defaultString,summaryTemplate,editTemplate,add
 	}
 	// - END
 
+	function getRoomString(roomObject){
+
+
+		var str = "";
+
+		str += roomObject.room + "-";
+
+		for(var i=0;i<roomObject.roomconfig.length;i++){
+
+			str += roomObject.roomconfig[i].adult;
+
+			if(roomObject.roomconfig[i].children){
+				
+				str += "_" + roomObject.roomconfig[i].children;
+				
+				str += "_" + roomObject.roomconfig[i].age1;
+				
+				if(roomObject.roomconfig[i].children > 1){
+					str += "_" + roomObject.roomconfig[i].age2;
+				}
+
+			}
+
+			// if last room, ignore -
+			if(i !== roomObject.roomconfig.length-1){
+
+				str += "-";
+
+			}
+		}
+
+		return str;
+
+	}
+
+
 	// summary printing
 	function generateSummary(){
+
+		// Fire Event for Pax Change.
 
 		var tp = _.template($('#' + summaryTemplate).text());
 
@@ -93,8 +131,6 @@ var paxWidget = function(rmstring,defaultString,summaryTemplate,editTemplate,add
 
 	function generateEdit(mode,obj,roomNumber){
 		
-		console.log(obj,roomNumber)
-
 		var tp = _.template($('#' + editTemplate).text());
 
 		if(obj){
@@ -121,8 +157,7 @@ var paxWidget = function(rmstring,defaultString,summaryTemplate,editTemplate,add
 	}
 
 	function getConfig(){
-
-		var ele = $('#editBox div[ele]');
+		var ele = $('#'+ mainContainer+ ' #editBox div[ele]');
 		var str = '1-';
 
 		for(var i=0; i<ele.length; i++){
@@ -145,32 +180,40 @@ var paxWidget = function(rmstring,defaultString,summaryTemplate,editTemplate,add
 
 		self.roomObject.roomconfig.push(roomstringParser(getConfig()).roomconfig[0]);
 
-		$('#summaryContainer').html(generateSummary());
+		$('#'+ mainContainer+ ' #summaryContainer').html(generateSummary());
 
-		$('#addButton').html(generateAdd());
+		$('#'+ mainContainer+ ' #addButton').html(generateAdd());
 		
-		$('#editBox').html('');
+		$('#'+ mainContainer+ ' #editBox').html('');
 
 	}
 
 	function editRoom(num){
-
+		
 		self.roomObject.roomconfig[num-1] = roomstringParser(getConfig()).roomconfig[0];
 
-		$('#summaryContainer').html(generateSummary());
+		if(self.roomString != getRoomString(self.roomObject)){
 
-		$('#editBox').html('');
+			console.log('changing')
+
+			self.roomString = getRoomString(self.roomObject);
+			
+			$('#'+ mainContainer+ ' #summaryContainer').html(generateSummary());
+
+		}
+
+		$('#'+ mainContainer+ ' #editBox').html('');
 	}
 
 	function removeRoom(num){
 
-		$('#editBox').html('');
+		$('#'+ mainContainer+ ' #editBox').html('');
 
 		self.roomObject.roomconfig.splice(num-1,1)
 
-		$('#summaryContainer').html(generateSummary());
+		$('#'+ mainContainer+ ' #summaryContainer').html(generateSummary());
 
-		$('#addButton').html(generateAdd());
+		$('#'+ mainContainer+ ' #addButton').html(generateAdd());
 	}	
 
 	this.updatePax = function(rmstring){
@@ -179,12 +222,28 @@ var paxWidget = function(rmstring,defaultString,summaryTemplate,editTemplate,add
 
 		this.roomObject = roomstringParser(rmstring);
 
-		$('#summaryContainer').html(generateSummary());
-		$('#editBox').html('');
-		$('#addButton').html(generateAdd());
+		$('#'+ mainContainer+ ' #summaryContainer').html(generateSummary());
+		$('#'+ mainContainer+ ' #editBox').html('');
+		$('#'+ mainContainer+ ' #addButton').html(generateAdd());
 
 	}
 
+	this.getView = function(rmstring,containerHook){
+
+		var container = containerHook || mainContainer;
+
+		$('#'+ container+ ' #summaryContainer').html(generateSummary());
+		$('#'+ container+ ' #editBox').html('');
+		$('#'+ container+ ' #addButton').html(generateAdd());
+
+	}
+
+	function compareObject(obj1, obj2){
+
+		console.log(JSON.stringify(obj1) === JSON.stringify(obj2))
+		return ( JSON.stringify(obj1) === JSON.stringify(obj2) )
+
+	}
 	// 2 - 2_1_6 - 3_2_5_7
 
 	this.roomString = rmstring;
@@ -194,10 +253,10 @@ var paxWidget = function(rmstring,defaultString,summaryTemplate,editTemplate,add
 	this.defaultRoomConfig = roomstringParser(defaultString);
 
 	//summary print test
-	$('#summaryContainer').html(generateSummary());
+	$('#'+ mainContainer+ ' #summaryContainer').html(generateSummary());
 
 	// Add button print Test
-	$('#addButton').html(generateAdd());
+	$('#'+ mainContainer+ ' #addButton').html(generateAdd());
 
 	$('#mainContainer').on('change','select[name=children]', function() {
 	  		
@@ -223,13 +282,13 @@ var paxWidget = function(rmstring,defaultString,summaryTemplate,editTemplate,add
 		} else {
 
 			// Edit print Test
-			$('#editBox').html(generateEdit('edit',self.roomObject.roomconfig[nm-1],nm-1));
+			$('#'+ mainContainer+ ' #editBox').html(generateEdit('edit',self.roomObject.roomconfig[nm-1],nm-1));
 		}
 	});
 
 	$('#mainContainer').on('click','#editSubmit',function(e){
 
-		var el = $('#edtHook');
+		var el = $('#'+ mainContainer+ ' #edtHook');
 
 		if($(el).data('mode') == 'add'){
 
