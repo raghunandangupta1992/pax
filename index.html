@@ -1,0 +1,182 @@
+<html>
+
+<head>
+
+<style>
+
+.box{
+	float:left;
+	padding: 10px;
+}
+
+.mainBox{
+	background-color: yellow;
+	padding: 10px;
+	height:150px;
+	width: 300px;
+}
+
+.dn{display:none;}
+
+.summary{
+	background-color: lightgreen;
+	width: 300px;
+	padding: 10px;
+
+}
+
+.summary span{
+	padding-right: 10px;
+}
+
+.adbtn{
+	background-color: lightblue;
+  	width: 300px;
+  	padding: 10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container"	id="mainContainer">
+
+	<div id="summaryContainer">
+		
+
+	</div>
+
+
+	<div class="mainBox" id="editBox">
+
+		
+
+
+	</div>
+
+	<div class="adbtn" id="addButton">
+
+
+	</div>
+
+</div>
+
+
+<script id="summarytemplate" type="text/template">
+	
+	<%for(var i=0; i<roomObject.roomconfig.length; i++){%>
+		
+		<div class="summary" data-serial="<%=i+1%>">
+
+			<span>Room <%=i+1%></span>
+			<span><%=roomObject.roomconfig[i].adult%> Adult || <%=roomObject.roomconfig[i].children%> <%=roomObject.roomconfig[i].childTag%></span>
+			<%if(roomObject.roomconfig.length != 1){%>
+				<button id="close">X</button>
+			<% } %>
+		</div>
+
+	<% } %>
+
+</script>
+
+<script type="text/template" id="editTemplate">
+
+		<p id="edtHook" data-mode= "<%=mode%>" data-serial = "<%=rmnumber + 1%>" >Room <%=rmnumber + 1%></p>
+
+		<div class="box" ele="adult">
+
+			<p>Adult</p>
+			<select name="adult">
+            	
+            	<%for(var x=1; x<5; x++ ){%>
+	            	<option value="<%=x%>"
+	            		<% if(x == adult) { %>
+	            			selected="selected"
+			            <% } %>
+			         ><%=x%></option>
+			     <% } %>
+            </select>
+
+		</div>
+
+		<div class="box" ele="children" >
+			
+			<p>Children</p>
+			<select name="children">
+            	
+            	<%for(var x=0; x<3; x++ ){%>
+	            	<option value="<%=x%>"
+	            		<% if(x == children) { %>
+	            			selected="selected"
+			            <% } %>
+			         ><%=x%></option>
+			     <% } %>
+            </select>
+
+		</div>
+
+		<div id="childBox1" ele="age1" class="box <% if(!age1){ %> dn <% } %>">
+			
+			<p>Child 1</p>
+			<select name="child1">
+            	
+            	<%for(var x=1; x<12; x++ ){%>
+	            	<option value="<%=x%>"
+	            		<% if(x == age1) { %>
+	            			selected="selected"
+			            <% } %>
+			         ><%=x%></option>
+			     <% } %>
+            </select>
+
+		</div>
+
+		<div id="childBox2" ele="age2" class="box <% if(!age2){ %> dn <% } %>">
+			
+			<p>Child 2</p>
+			<select name="child2">
+            	
+            	<%for(var x=1; x<12; x++ ){%>
+	            	<option value="<%=x%>"
+	            		<% if(x == age2) { %>
+	            			selected="selected"
+			            <% } %>
+			         ><%=x%></option>
+			     <% } %>
+            </select>
+
+		</div>
+
+		<button id="editSubmit">Done</button>
+
+
+
+</script>
+
+<script type="text/template" id="addTemplate">
+	
+	<%if(roomObject.roomconfig.length < 4){%>
+
+		<button id="addRoom">Add Rooms</button>
+
+	<% } %>
+
+</script>
+
+
+<script src="jquery.js" type="text/javascript"></script>
+<script src="underscore-min.js" type="text/javascript"></script>
+<script src="myjs.js" type="text/javascript"></script>
+
+</body>
+
+
+
+</html>
+
+
+
+
+
